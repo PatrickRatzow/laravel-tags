@@ -53,6 +53,27 @@ trait HasTags
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
+    public function scopeWithoutTags(Builder $query, $tags, string $type = null): Builder
+    {
+        $tags = static::convertToTags($tags, $type);
+
+        collect($tags)->each(function ($tag) use ($query) {
+            $query->whereNotIn("{$this->getTable()}.{$this->getKeyName()}", function ($query) use ($tag) {
+                $query->from('taggables')
+                    ->select('taggables.taggable_id')
+                    ->where('taggables.tag_id', $tag ? $tag->id : 0);
+            });
+        });
+
+        return $query;
+    }
+
+    /**
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param array|\ArrayAccess|\Spatie\Tags\Tag $tags
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
     public function scopeWithAllTags(Builder $query, $tags, string $type = null): Builder
     {
         $tags = static::convertToTags($tags, $type);
