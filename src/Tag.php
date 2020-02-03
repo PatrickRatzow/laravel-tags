@@ -7,11 +7,10 @@ use Illuminate\Database\Eloquent\Collection as DbCollection;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;
-use Spatie\Translatable\HasTranslations;
 
 class Tag extends Model implements Sortable
 {
-    use SortableTrait, HasTranslations, HasSlug;
+    use SortableTrait, HasSlug;
 
     public $translatable = ['name', 'slug'];
 
@@ -91,14 +90,5 @@ class Tag extends Model implements Sortable
         }
 
         return $tag;
-    }
-
-    public function setAttribute($key, $value)
-    {
-        if ($key === 'name' && ! is_array($value)) {
-            return $this->setTranslation($key, app()->getLocale(), $value);
-        }
-
-        return parent::setAttribute($key, $value);
     }
 }
