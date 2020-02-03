@@ -20,7 +20,6 @@ abstract class TestCase extends Orchestra
     {
         return [
             TagsServiceProvider::class,
-            TranslatableServiceProvider::class,
         ];
     }
 
