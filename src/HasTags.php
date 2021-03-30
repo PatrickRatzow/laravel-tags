@@ -66,18 +66,21 @@ trait HasTags
 
     /**
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $taggable_type
      * @param array|\ArrayAccess|\Spatie\Tags\Tag $tags
+     * @param string $type
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeWithoutTags(Builder $query, $tags, string $type = null): Builder
+    public function scopeWithoutTags(Builder $query, string $taggable_type, $tags, string $type = null): Builder
     {
         $tags = static::convertToTags($tags, $type);
 
-        collect($tags)->each(function ($tag) use ($query) {
-            $query->whereNotIn("{$this->getTable()}.{$this->getKeyName()}", function ($query) use ($tag) {
+        collect($tags)->each(function ($tag) use ($query, $taggable_type) {
+            $query->whereNotIn("{$this->getTable()}.{$this->getKeyName()}", function ($query) use ($tag, $taggable_type) {
                 $query->from('taggables')
                     ->select('taggables.taggable_id')
+                    ->where('taggables.taggable_type', $taggable_type)
                     ->where('taggables.tag_id', $tag ? $tag->id : 0);
             });
         });
